@@ -57,26 +57,29 @@ export default function TimeRangePicker() {
         <CalendarDays size={16} aria-hidden="true" /> {detailed}
       </button>
       {open && (
-        <div className="panel">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.625rem' }}>
-            <div>
-              <div className="muted" style={{ fontSize: '0.75rem', marginBottom: '0.375rem' }}>快速选择</div>
-              <div style={{ display: 'grid', gap: '0.375rem' }}>
-                {PRESETS.map(p => (
-                  <button key={p.value} onClick={() => applyPreset(p.value)} className="btn pill" style={{ background: range.preset === p.value ? 'rgba(59,130,246,0.12)' : 'var(--card-bg)' }}>{p.label}</button>
-                ))}
+        <>
+          <div className="backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div className="panel">
+            <div className="range-picker-grid">
+              <div>
+                <div className="muted" style={{ fontSize: '0.75rem', marginBottom: '0.375rem' }}>快速选择</div>
+                <div style={{ display: 'grid', gap: '0.375rem' }}>
+                  {PRESETS.map(p => (
+                    <button key={p.value} onClick={() => applyPreset(p.value)} className="btn pill" style={{ background: range.preset === p.value ? 'rgba(59,130,246,0.12)' : 'var(--card-bg)' }}>{p.label}</button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="muted" style={{ fontSize: '0.75rem', marginBottom: '0.375rem' }}>自定义范围</div>
-              <div style={{ display: 'grid', gap: '0.375rem' }}>
-                <input type="datetime-local" value={absFrom} onChange={e => setAbsFrom(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
-                <input type="datetime-local" value={absTo} onChange={e => setAbsTo(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
-                <button onClick={applyAbsolute} className="btn" style={{ background: 'var(--brand-neutral)', color: '#fff' }}>应用</button>
+              <div>
+                <div className="muted" style={{ fontSize: '0.75rem', marginBottom: '0.375rem' }}>自定义范围</div>
+                <div style={{ display: 'grid', gap: '0.375rem' }}>
+                  <input type="datetime-local" value={absFrom} onChange={e => setAbsFrom(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
+                  <input type="datetime-local" value={absTo} onChange={e => setAbsTo(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
+                  <button onClick={applyAbsolute} className="btn" style={{ background: 'var(--brand-neutral)', color: '#fff' }}>应用</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )
