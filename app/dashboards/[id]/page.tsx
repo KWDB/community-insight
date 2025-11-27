@@ -8,3 +8,8 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
   if (!dashboard) return <div className="card">未找到该仪表盘</div>
   return <DashboardClient dashboard={dashboard} />
 }
+
+export async function generateStaticParams() {
+  const manifest = loadManifest()
+  return manifest.dashboards.map((d: any) => ({ id: d.id }))
+}

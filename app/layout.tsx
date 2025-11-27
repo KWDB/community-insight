@@ -6,7 +6,8 @@ import Footer from '../components/Footer'
 
 export const metadata = {
   title: 'KWDB Community Insight',
-  description: 'KWDB 社区指标仪表盘'
+  description: '用于展示 KWDB 社区的指标和趋势',
+  metadataBase: new URL('https://kwdb.github.io/community-insight')
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
