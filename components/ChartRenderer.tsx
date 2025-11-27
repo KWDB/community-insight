@@ -11,6 +11,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
+  const isMobile = useIsMobile()
 
   const option = useMemo(() => {
     const series = (data?.series ?? []) as any[]
@@ -20,16 +21,43 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
     const ds = series.length > 0 ? decimate(series, 4000) : []
     return {
       color: colors,
-      grid: { left: 40, right: 20, top: 20, bottom: 40, containLabel: true },
-      tooltip: { trigger: 'axis' },
-      toolbox: { feature: { dataZoom: {}, restore: {}, saveAsImage: {} } },
-      dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-      xAxis: { type: 'category', data: ds.map((d: any) => d[xKey]), axisLabel: { interval: 'auto', color: '#4b5563' } },
-      yAxis: { type: 'value', axisLabel: { color: '#4b5563' } },
+      grid: { 
+        left: isMobile ? 0 : 40, 
+        right: isMobile ? 10 : 20, 
+        top: 20, 
+        bottom: 40, 
+        containLabel: true 
+      },
+      tooltip: { trigger: 'axis', confine: true },
+      toolbox: { 
+        show: !isMobile,
+        feature: { dataZoom: {}, restore: {}, saveAsImage: {} } 
+      },
+      dataZoom: [
+        { type: 'inside', zoomLock: false }, 
+        { type: 'slider', height: isMobile ? 20 : 30 }
+      ],
+      xAxis: { 
+        type: 'category', 
+        data: ds.map((d: any) => d[xKey]), 
+        axisLabel: { 
+          interval: 'auto', 
+          color: '#4b5563', 
+          fontSize: isMobile ? 10 : 12,
+          hideOverlap: true
+        } 
+      },
+      yAxis: { 
+        type: 'value', 
+        axisLabel: { 
+          color: '#4b5563', 
+          fontSize: isMobile ? 10 : 12 
+        } 
+      },
       series: [{ type: chart.viz === 'bar' ? 'bar' : 'line', data: ds.map((d: any) => d[yKey]), smooth: true, lineStyle: { width: 2 } }],
       animation: true
     }
-  }, [chart, data])
+  }, [chart, data, isMobile])
 
   useEffect(() => {
     let cancelled = false
@@ -53,33 +81,48 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
     return () => { cancelled = true }
   }, [chart.id, chart.queryModule, chart.refreshSec, range, refreshSignal])
 
+  const chartRef = React.useRef<any>(null)
+
+  useEffect(() => {
+    const inst = chartRef.current?.getEchartsInstance()
+    if (!inst) return
+    const resizeObserver = new ResizeObserver(() => {
+      inst.resize()
+    })
+    const container = chartRef.current?.ele
+    if (container) resizeObserver.observe(container)
+    return () => resizeObserver.disconnect()
+  }, [])
+
   if (loading) return <div className="skeleton" />
   if (error) return <div style={{ color: 'crimson' }}>错误：{error}</div>
   const isEmpty = !data || (chart.viz === 'stat' ? !data.stat : (!data.series && !data.rows))
   if (isEmpty) return <div className="muted">暂无数据</div>
   if (chart.viz === 'stat') return <Stat data={data} options={chart.options} />
   if (chart.viz === 'table') return <Table rows={data.rows} />
-  return <ReactECharts option={option} style={{ height: 280 }} />
+  return <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} />
 }
 
 function Table({ rows }: { rows: any[] }) {
   if (!rows?.length) return <div className="muted">暂无数据</div>
   const columns = Object.keys(rows[0])
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        <tr>
-          {columns.map(c => <th key={c} style={{ textAlign: 'left', borderBottom: '1px solid #eee', padding: 6 }}>{c}</th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i}>
-            {columns.map(c => <td key={c} style={{ borderBottom: '1px solid #f5f5f5', padding: 6 }}>{String(r[c])}</td>)}
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 'max-content' }}>
+        <thead>
+          <tr>
+            {columns.map(c => <th key={c} style={{ textAlign: 'left', borderBottom: '1px solid #eee', padding: 6, whiteSpace: 'nowrap' }}>{c}</th>)}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {columns.map(c => <td key={c} style={{ borderBottom: '1px solid #f5f5f5', padding: 6, whiteSpace: 'nowrap' }}>{String(r[c])}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -107,4 +150,15 @@ function decimate(arr: any[], max: number) {
   const out = [] as any[]
   for (let i = 0; i < a.length; i += step) out.push(a[i])
   return out
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return isMobile
 }

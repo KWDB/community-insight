@@ -7,7 +7,7 @@ import TimeRangePicker from './TimeRangePicker'
 export default function HomeClient({ manifest }: { manifest: { dashboards: { id: string; title: string; description?: string }[] } }) {
   return (
     <TimeRangeProvider>
-      <div className="header">
+      <div className="subheader">
         <span className="muted">选择时间范围以查看所有仪表盘</span>
         <TimeRangePicker />
       </div>
