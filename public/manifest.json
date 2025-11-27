@@ -1,0 +1,16 @@
+{
+  "name": "KWDB Community Insight",
+  "short_name": "KW Insight",
+  "start_url": "/community-insight/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
