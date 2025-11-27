@@ -1,0 +1,12 @@
+id: release_num_line
+title: Github Release 下载趋势
+description: KWDB Github Release 下载趋势
+queryModule: releaseNumLine
+viz: line
+options:
+  xKey: date
+  yKey: count
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

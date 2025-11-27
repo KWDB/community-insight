@@ -1,0 +1,40 @@
+name: E2E Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - name: Cache Playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm exec playwright install --with-deps
+      - name: Run E2E
+        run: pnpm e2e
+      - if: failure()
+        run: echo "E2E tests failed" >> $GITHUB_STEP_SUMMARY
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore

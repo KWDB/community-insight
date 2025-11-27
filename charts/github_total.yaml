@@ -1,0 +1,14 @@
+id: github_total
+title: Github 总下载量
+description: KWDB 的 Github 总下载量
+queryModule: githubTotal
+viz: stat
+order: 5
+colSpan: 1
+options:
+  decimals: 0
+  suffix: ''
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

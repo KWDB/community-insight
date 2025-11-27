@@ -1,0 +1,15 @@
+id: docker_downloads_num_line
+title: Docker下载趋势
+description: KWDB 社区下载量按天汇总
+queryModule: downloadsNumLine
+viz: line
+options:
+  xKey: date
+  yKey: count
+section: trends
+order: 2
+colSpan: 2
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

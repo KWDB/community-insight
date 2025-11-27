@@ -1,0 +1,15 @@
+id: downloads_total
+title: 总下载量
+description: KWDB 的总下载量
+queryModule: downloadsTotal
+viz: stat
+options:
+  decimals: 0
+  suffix: ''
+section: stats
+order: 1
+colSpan: 1
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

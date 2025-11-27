@@ -1,0 +1,14 @@
+id: gitee_clone
+title: Gitee 指定时间段克隆量
+description: KWDB Gitee 在所选时间范围内的总克隆量
+queryModule: cloneGitee
+viz: stat
+order: 4
+colSpan: 1
+options:
+  decimals: 0
+  suffix: ''
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60
