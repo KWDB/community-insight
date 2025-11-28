@@ -1,6 +1,6 @@
 id: docker_downloads
 title: Docker 指定时间段下载量
-description: KWDB Docker 在所选时间范围内的总下载量
+description: KWDB Docker 在 $from - $to 的总下载量
 queryModule: downloadsDocker
 viz: stat
 order: 3

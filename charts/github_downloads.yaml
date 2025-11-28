@@ -1,6 +1,6 @@
 id: github_downloads
 title: GitHub 指定时间段下载量
-description: KWDB GitHub 在所选时间范围内的总下载量
+description: KWDB GitHub 在 $from - $to 的总下载量
 queryModule: downloadsGithub
 viz: stat 
 order: 6
