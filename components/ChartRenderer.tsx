@@ -1,8 +1,10 @@
 'use client'
+import { X, Copy, Check } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import ReactECharts from 'echarts-for-react'
 import type { ChartConfig } from '../lib/types'
 import { useTimeRange } from '../lib/time'
+import dayjs from 'dayjs'
 import { QUERIES } from '../queries'
 import { getCache, setCache } from '../lib/dataCache'
 
@@ -12,6 +14,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const isMobile = useIsMobile()
+  const [modalOpen, setModalOpen] = useState(false)
 
   const option = useMemo(() => {
     const series = (data?.series ?? []) as any[]
@@ -98,9 +101,79 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   if (error) return <div style={{ color: 'crimson' }}>错误：{error}</div>
   const isEmpty = !data || (chart.viz === 'stat' ? !data.stat : (!data.series && !data.rows))
   if (isEmpty) return <div className="muted">暂无数据</div>
-  if (chart.viz === 'stat') return <Stat data={data} options={chart.options} />
+  if (chart.viz === 'stat') {
+    return (
+      <>
+        <Stat data={data} options={chart.options} onClick={() => setModalOpen(true)} />
+        <StatDetailModal 
+          open={modalOpen} 
+          onClose={() => setModalOpen(false)} 
+          title={chart.title} 
+          data={data}
+          description={chart.description}
+          range={range}
+        />
+      </>
+    )
+  }
   if (chart.viz === 'table') return <Table rows={data.rows} />
   return <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} autoResize={false} />
+}
+
+function StatDetailModal({ open, onClose, title, data, description, range }: { open: boolean, onClose: () => void, title: string, data: any, description?: string, range: { from: Date, to: Date } }) {
+  const [copied, setCopied] = useState(false)
+  
+  // Parse description with time range
+  const parsedDescription = useMemo(() => {
+    if (!description) return null
+    return description
+      .replace(/\$from/g, dayjs(range.from).format('YYYY-MM-DD'))
+      .replace(/\$to/g, dayjs(range.to).format('YYYY-MM-DD'))
+  }, [description, range])
+
+  if (!open) return null
+
+  const value = Number(data?.stat?.value ?? 0)
+  const label = data?.stat?.label ?? '指标'
+  const formatted = value.toLocaleString()
+
+  const handleCopy = () => {
+    const text = `${title}：${formatted}`
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <>
+      <div className="share-backdrop" onClick={onClose} aria-hidden="true" />
+      <div className="share-modal" role="dialog" aria-modal="true">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 className="title" style={{ fontSize: '1.125rem', marginBottom: 0 }}>{title}</h3>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={handleCopy} className="icon-btn" aria-label="复制">
+              {copied ? <Check size={20} color="green" /> : <Copy size={20} />}
+            </button>
+            <button onClick={onClose} className="icon-btn" aria-label="关闭">
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="stat-value-large">
+            {formatted}
+            <div className="muted" style={{ fontSize: 14, fontWeight: 400 }}>{label}</div>
+          </div>
+          {parsedDescription && (
+             <div className="stat-description">
+               {parsedDescription}
+             </div>
+          )}
+        </div>
+      </div>
+    </>
+  )
 }
 
 function Table({ rows }: { rows: any[] }) {
@@ -126,7 +199,7 @@ function Table({ rows }: { rows: any[] }) {
   )
 }
 
-function Stat({ data, options }: { data: any, options?: Record<string, any> }) {
+function Stat({ data, options, onClick }: { data: any, options?: Record<string, any>, onClick?: () => void }) {
   const value = Number(data?.stat?.value ?? 0)
   const label = data?.stat?.label ?? '指标'
   const decimals = Number(options?.decimals ?? 0)
@@ -136,7 +209,7 @@ function Stat({ data, options }: { data: any, options?: Record<string, any> }) {
     maximumFractionDigits: decimals
   })
   return (
-    <div className="card stat" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="card stat" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--brand-accent)' }}>{formatted}{suffix}</div>
       <div className="muted" style={{ fontSize: 12 }}>{label}</div>
     </div>
