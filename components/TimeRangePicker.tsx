@@ -54,7 +54,8 @@ export default function TimeRangePicker() {
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(o => !o)} className="btn pill btn-range" aria-label="时间范围">
-        <CalendarDays size={16} aria-hidden="true" /> {detailed}
+        <CalendarDays size={16} aria-hidden="true" />
+        <span suppressHydrationWarning>{detailed}</span>
       </button>
       {open && (
         <>
