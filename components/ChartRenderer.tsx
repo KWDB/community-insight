@@ -100,7 +100,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   if (isEmpty) return <div className="muted">暂无数据</div>
   if (chart.viz === 'stat') return <Stat data={data} options={chart.options} />
   if (chart.viz === 'table') return <Table rows={data.rows} />
-  return <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} />
+  return <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} autoResize={false} />
 }
 
 function Table({ rows }: { rows: any[] }) {
