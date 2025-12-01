@@ -2,6 +2,7 @@ import './globals.css'
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { AuthProvider, ProtectedRoute } from '../components/Auth'
 
 export const viewport = {
   width: 'device-width',
@@ -25,11 +26,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body>
-        <div className="container">
-          <Navbar />
-          {children}
-          <Footer />
-        </div>
+        <AuthProvider>
+          <ProtectedRoute>
+            <div className="container">
+              <Navbar />
+              {children}
+              <Footer />
+            </div>
+          </ProtectedRoute>
+        </AuthProvider>
       </body>
     </html>
   )
