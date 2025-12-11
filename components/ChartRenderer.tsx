@@ -1,7 +1,8 @@
 'use client'
-import { X, Copy, Check } from 'lucide-react'
+import { X, Copy, Check, Maximize2, Minimize2 } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import ReactECharts from 'echarts-for-react'
+import { graphic } from 'echarts'
 import type { ChartConfig } from '../lib/types'
 import { useTimeRange } from '../lib/time'
 import dayjs from 'dayjs'
@@ -15,6 +16,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   const [loading, setLoading] = useState<boolean>(true)
   const isMobile = useIsMobile()
   const [modalOpen, setModalOpen] = useState(false)
+  const [isYAxisTruncated, setYAxisTruncated] = useState(false)
 
   const option = useMemo(() => {
     const series = (data?.series ?? []) as any[]
@@ -22,45 +24,93 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
     const yKey = chart.options?.yKey || 'value'
     const colors = ['#3b82f6', '#93c5fd', '#1d4ed8']
     const ds = series.length > 0 ? decimate(series, 4000) : []
+    
+    // Gradient for area charts
+    const areaGradient = new graphic.LinearGradient(0, 0, 0, 1, [
+      { offset: 0, color: 'rgba(59, 130, 246, 0.3)' },
+      { offset: 1, color: 'rgba(59, 130, 246, 0.02)' }
+    ])
+
     return {
       color: colors,
       grid: { 
-        left: isMobile ? 0 : 40, 
+        left: isMobile ? 5 : 10, 
         right: isMobile ? 10 : 20, 
-        top: 20, 
-        bottom: 40, 
+        top: 40, 
+        bottom: 30, 
         containLabel: true 
       },
-      tooltip: { trigger: 'axis', confine: true },
+      tooltip: { 
+        trigger: 'axis', 
+        confine: true,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e5e7eb',
+        textStyle: { color: '#111827', fontSize: 12 },
+        extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 8px;'
+      },
       toolbox: { 
         show: !isMobile,
-        feature: { dataZoom: {}, restore: {}, saveAsImage: {} } 
+        feature: { saveAsImage: { show: true, title: '保存图片' } },
+        right: 30,
+        top: 0
       },
       dataZoom: [
         { type: 'inside', zoomLock: false }, 
-        { type: 'slider', height: isMobile ? 20 : 30 }
+        { type: 'slider', height: isMobile ? 20 : 24, bottom: 0, borderColor: 'transparent', backgroundColor: '#f9fafb' }
       ],
       xAxis: { 
         type: 'category', 
         data: ds.map((d: any) => d[xKey]), 
         axisLabel: { 
           interval: 'auto', 
-          color: '#4b5563', 
-          fontSize: isMobile ? 10 : 12,
-          hideOverlap: true
-        } 
+          color: '#6b7280', 
+          fontSize: isMobile ? 10 : 11,
+          hideOverlap: true,
+          margin: 12
+        },
+        axisLine: { lineStyle: { color: '#e5e7eb' } },
+        axisTick: { show: false }
       },
       yAxis: { 
-        type: 'value', 
+        type: 'value',
+        scale: isYAxisTruncated,
         axisLabel: { 
-          color: '#4b5563', 
-          fontSize: isMobile ? 10 : 12 
-        } 
+          color: '#6b7280', 
+          fontSize: isMobile ? 10 : 11
+        },
+        splitLine: { lineStyle: { type: 'dashed', color: '#f3f4f6' } }
       },
-      series: [{ type: chart.viz === 'bar' ? 'bar' : 'line', data: ds.map((d: any) => d[yKey]), smooth: true, lineStyle: { width: 2 } }],
-      animation: true
+      series: [{ 
+        type: chart.viz === 'bar' ? 'bar' : 'line', 
+        data: ds.map((d: any) => d[yKey]), 
+        smooth: true, 
+        showSymbol: false,
+        symbolSize: 8,
+        itemStyle: {
+          color: '#3b82f6',
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        lineStyle: { 
+          width: 3,
+          shadowColor: 'rgba(59, 130, 246, 0.2)',
+          shadowBlur: 10
+        },
+        areaStyle: chart.viz !== 'bar' ? {
+          color: areaGradient,
+          opacity: 1
+        } : undefined,
+        markLine: {
+          symbol: 'none',
+          data: [{ type: 'average', name: '平均值' }],
+          lineStyle: { color: '#9ca3af', type: 'dashed', width: 1 },
+          label: { position: 'insideEndTop', formatter: '{b}', color: '#9ca3af', fontSize: 10 }
+        }
+      }],
+      animationDuration: 1000,
+      animationEasing: 'cubicOut',
     }
-  }, [chart, data, isMobile])
+  }, [chart, data, isMobile, isYAxisTruncated])
 
   useEffect(() => {
     let cancelled = false
@@ -117,7 +167,24 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
     )
   }
   if (chart.viz === 'table') return <Table rows={data.rows} />
-  return <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} autoResize={false} />
+  return (
+    <div style={{ position: 'relative' }}>
+       {(chart.viz === 'line' || chart.viz === 'bar') && !isMobile && (
+         <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
+            <button
+               onClick={() => setYAxisTruncated(!isYAxisTruncated)}
+               className="icon-btn"
+               style={{ width: 24, height: 24, border: 'none', background: 'transparent', color: '#9ca3af', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+               title={isYAxisTruncated ? "从零开始" : "自动缩放"}
+               aria-label={isYAxisTruncated ? "从零开始" : "自动缩放"}
+            >
+               {isYAxisTruncated ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
+         </div>
+       )}
+       <ReactECharts ref={chartRef} option={option} style={{ height: 280, width: '100%' }} autoResize={false} />
+    </div>
+  )
 }
 
 function StatDetailModal({ open, onClose, title, data, description, range }: { open: boolean, onClose: () => void, title: string, data: any, description?: string, range: { from: Date, to: Date } }) {
