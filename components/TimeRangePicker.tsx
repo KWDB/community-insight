@@ -23,17 +23,26 @@ export default function TimeRangePicker() {
   const [open, setOpen] = useState(false)
   const [absFrom, setAbsFrom] = useState<string>('')
   const [absTo, setAbsTo] = useState<string>('')
+
+  // 每次打开或 range 变化时，同步到自定义输入框
+  React.useEffect(() => {
+    if (open) {
+      setAbsFrom(dayjs(range.from).format('YYYY-MM-DD'))
+      setAbsTo(dayjs(range.to).format('YYYY-MM-DD'))
+    }
+  }, [open, range])
+
   const label = useMemo(() => {
     const p = PRESETS.find(p => p.value === range.preset)
     if (p) return p.label
-    const f = range.from.toLocaleString()
-    const t = range.to.toLocaleString()
+    const f = dayjs(range.from).format('YYYY-MM-DD')
+    const t = dayjs(range.to).format('YYYY-MM-DD')
     return `${f} ~ ${t}`
   }, [range])
 
   const detailed = useMemo(() => {
-    const f = dayjs(range.from).format('YYYY-MM-DD HH:mm')
-    const t = dayjs(range.to).format('YYYY-MM-DD HH:mm')
+    const f = dayjs(range.from).format('YYYY-MM-DD')
+    const t = dayjs(range.to).format('YYYY-MM-DD')
     return `${label} · ${f} ~ ${t}`
   }, [label, range])
 
@@ -44,10 +53,17 @@ export default function TimeRangePicker() {
 
   const applyAbsolute = () => {
     if (!absFrom || !absTo) return
-    const from = new Date(absFrom)
-    const to = new Date(absTo)
+    // 补全时间：起始日期的 00:00:00 到 结束日期的 23:59:59
+    const from = dayjs(absFrom).startOf('day').toDate()
+    const to = dayjs(absTo).endOf('day').toDate()
+    
     if (isNaN(from.getTime()) || isNaN(to.getTime())) return
-    setRange({ from, to, preset: 'custom' })
+    
+    if (from > to) {
+      setRange({ from: to, to: from, preset: 'custom' })
+    } else {
+      setRange({ from, to, preset: 'custom' })
+    }
     setOpen(false)
   }
 
@@ -73,8 +89,8 @@ export default function TimeRangePicker() {
               <div>
                 <div className="muted" style={{ fontSize: '0.75rem', marginBottom: '0.375rem' }}>自定义范围</div>
                 <div style={{ display: 'grid', gap: '0.375rem' }}>
-                  <input type="datetime-local" value={absFrom} onChange={e => setAbsFrom(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
-                  <input type="datetime-local" value={absTo} onChange={e => setAbsTo(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
+                  <input type="date" value={absFrom} onChange={e => setAbsFrom(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
+                  <input type="date" value={absTo} onChange={e => setAbsTo(e.target.value)} className="btn" style={{ padding: '0.375rem 0.625rem' }} />
                   <button onClick={applyAbsolute} className="btn" style={{ background: 'var(--brand-neutral)', color: '#fff' }}>应用</button>
                 </div>
               </div>

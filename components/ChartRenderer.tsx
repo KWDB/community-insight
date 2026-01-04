@@ -269,6 +269,7 @@ function Table({ rows }: { rows: any[] }) {
 function Stat({ data, options, onClick }: { data: any, options?: Record<string, any>, onClick?: () => void }) {
   const value = Number(data?.stat?.value ?? 0)
   const label = data?.stat?.label ?? '指标'
+  const date = data?.stat?.date
   const decimals = Number(options?.decimals ?? 0)
   const suffix = options?.suffix ?? ''
   const formatted = value.toLocaleString(undefined, {
@@ -278,7 +279,10 @@ function Stat({ data, options, onClick }: { data: any, options?: Record<string, 
   return (
     <div className="card stat" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--brand-accent)' }}>{formatted}{suffix}</div>
-      <div className="muted" style={{ fontSize: 12 }}>{label}</div>
+      <div className="muted" style={{ fontSize: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <span>{label}</span>
+        {date && <span style={{ fontSize: 10, opacity: 0.7 }}>{date}</span>}
+      </div>
     </div>
   )
 }
