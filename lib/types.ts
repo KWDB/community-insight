@@ -4,6 +4,7 @@ export type ChartConfig = {
   description?: string
   queryModule: string
   viz: 'line' | 'bar' | 'area' | 'table' | 'stat'
+  icon?: string
   options?: Record<string, any>
   defaultTimeRange?: { from: string; to: string }
   refreshSec?: number

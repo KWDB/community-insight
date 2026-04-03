@@ -1,5 +1,5 @@
 'use client'
-import { X, Copy, Check, Maximize2, Minimize2 } from 'lucide-react'
+import { X, Copy, Check, Maximize2, Minimize2, Github, Box, GitBranch } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import ReactECharts from 'echarts-for-react'
 import { graphic } from 'echarts'
@@ -8,6 +8,12 @@ import { useTimeRange } from '../lib/time'
 import dayjs from 'dayjs'
 import { QUERIES } from '../queries'
 import { getCache, setCache } from '../lib/dataCache'
+
+export const ICON_MAP: Record<string, React.ElementType> = {
+  Github,
+  Docker: Box,
+  Gitee: GitBranch
+}
 
 export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: ChartConfig, refreshSignal?: number }) {
   const { range } = useTimeRange()
@@ -154,7 +160,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   if (chart.viz === 'stat') {
     return (
       <>
-        <Stat data={data} options={chart.options} onClick={() => setModalOpen(true)} />
+        <Stat data={data} options={chart.options} icon={chart.icon} onClick={() => setModalOpen(true)} />
         <StatDetailModal 
           open={modalOpen} 
           onClose={() => setModalOpen(false)} 
@@ -162,6 +168,7 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
           data={data}
           description={chart.description}
           range={range}
+          icon={chart.icon}
         />
       </>
     )
@@ -187,9 +194,11 @@ export default function ChartRenderer({ chart, refreshSignal = 0 }: { chart: Cha
   )
 }
 
-function StatDetailModal({ open, onClose, title, data, description, range }: { open: boolean, onClose: () => void, title: string, data: any, description?: string, range: { from: Date, to: Date } }) {
+function StatDetailModal({ open, onClose, title, data, description, range, icon }: { open: boolean, onClose: () => void, title: string, data: any, description?: string, range: { from: Date, to: Date }, icon?: string }) {
   const [copied, setCopied] = useState(false)
   
+  const IconComp = icon ? ICON_MAP[icon] : null
+
   // Parse description with time range
   const parsedDescription = useMemo(() => {
     if (!description) return null
@@ -216,7 +225,10 @@ function StatDetailModal({ open, onClose, title, data, description, range }: { o
       <div className="share-backdrop" onClick={onClose} aria-hidden="true" />
       <div className="share-modal" role="dialog" aria-modal="true">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 className="title" style={{ fontSize: '1.125rem', marginBottom: 0 }}>{title}</h3>
+          <h3 className="title" style={{ fontSize: '1.125rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {IconComp && <IconComp size={20} />}
+            {title}
+          </h3>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button onClick={handleCopy} className="icon-btn" aria-label="复制">
               {copied ? <Check size={20} color="green" /> : <Copy size={20} />}
@@ -266,19 +278,25 @@ function Table({ rows }: { rows: any[] }) {
   )
 }
 
-function Stat({ data, options, onClick }: { data: any, options?: Record<string, any>, onClick?: () => void }) {
+function Stat({ data, options, icon, onClick }: { data: any, options?: Record<string, any>, icon?: string, onClick?: () => void }) {
   const value = Number(data?.stat?.value ?? 0)
   const label = data?.stat?.label ?? '指标'
   const date = data?.stat?.date
   const decimals = Number(options?.decimals ?? 0)
   const suffix = options?.suffix ?? ''
+  
+  const IconComp = icon ? ICON_MAP[icon] : null
+
   const formatted = value.toLocaleString(undefined, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   })
   return (
     <div className="card stat" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-      <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--brand-accent)' }}>{formatted}{suffix}</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {IconComp && <IconComp size={28} color="var(--brand-accent)" />}
+        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--brand-accent)' }}>{formatted}{suffix}</div>
+      </div>
       <div className="muted" style={{ fontSize: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         <span>{label}</span>
         {date && <span style={{ fontSize: 10, opacity: 0.7 }}>{date}</span>}
