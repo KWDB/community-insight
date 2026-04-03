@@ -1,9 +1,11 @@
 id: github_total
 title: Github 总下载量
+icon: Github
 description: KWDB 的 Github 总下载量
 queryModule: githubTotal
 viz: stat
-order: 5
+section: total_downloads
+order: 25
 colSpan: 1
 options:
   decimals: 0

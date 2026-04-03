@@ -1,0 +1,16 @@
+id: github_clone_line
+title: GitHub 克隆趋势
+icon: Github
+description: KWDB/KWDB 仓库每日克隆量趋势
+queryModule: githubCloneLine
+viz: line
+options:
+  xKey: date
+  yKey: count
+section: trends
+order: 3
+colSpan: 2
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

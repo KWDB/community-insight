@@ -43,7 +43,8 @@ export default function TimeRangePicker() {
   const detailed = useMemo(() => {
     const f = dayjs(range.from).format('YYYY-MM-DD')
     const t = dayjs(range.to).format('YYYY-MM-DD')
-    return `${label} · ${f} ~ ${t}`
+    const hasPreset = PRESETS.some(p => p.value === range.preset)
+    return hasPreset ? `${label} · ${f} ~ ${t}` : `${f} ~ ${t}`
   }, [label, range])
 
   const applyPreset = (v: string) => {

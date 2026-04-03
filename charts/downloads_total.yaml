@@ -6,7 +6,7 @@ viz: stat
 options:
   decimals: 0
   suffix: ''
-section: stats
+section: total_downloads
 order: 1
 colSpan: 1
 defaultTimeRange:

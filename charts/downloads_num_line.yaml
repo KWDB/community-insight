@@ -7,7 +7,7 @@ options:
   xKey: date
   yKey: count
 section: trends
-order: 2
+order: 1
 colSpan: 2
 defaultTimeRange:
   from: now-30d

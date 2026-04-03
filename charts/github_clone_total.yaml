@@ -1,0 +1,15 @@
+id: github_clone_total
+title: GitHub 指定时间段克隆量
+icon: Github
+description: KWDB/KWDB 仓库在 $from - $to 的总克隆量
+queryModule: githubCloneTotal
+viz: stat
+order: 4
+colSpan: 1
+options:
+  decimals: 0
+  suffix: ''
+defaultTimeRange:
+  from: now-30d
+  to: now
+refreshSec: 60

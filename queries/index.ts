@@ -5,6 +5,8 @@ export const QUERIES: Record<string, () => Promise<any>> = {
   downloadsDocker: () => import('./downloadsDocker'),
   downloadsGithub: () => import('./downloadsGithub'),
   githubTotal: () => import('./githubTotal'),
+  githubCloneTotal: () => import('./githubCloneTotal'),
+  githubCloneLine: () => import('./githubCloneLine'),
   cloneGitee: () => import('./cloneGitee'),
   giteeCloneLine: () => import('./giteeCloneLine'),
   releaseNumLine: () => import('./releaseNumLine'),

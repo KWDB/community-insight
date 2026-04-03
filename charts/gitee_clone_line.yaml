@@ -1,11 +1,15 @@
 id: gitee_clone_line
-title: Gitee克隆趋势
+title: Gitee 克隆趋势
+icon: Gitee
 description: KWDB Gitee 克隆量按天汇总
 queryModule: giteeCloneLine
 viz: line
 options:
   xKey: date
   yKey: count
+section: trends
+order: 4
+colSpan: 2
 defaultTimeRange:
   from: now-30d
   to: now
