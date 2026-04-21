@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
-  basePath: '/community-insight',
   trailingSlash: true,
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL,

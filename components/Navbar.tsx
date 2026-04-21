@@ -28,8 +28,7 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="nav desktop-nav">
-          <Link href="/" className="btn" style={{ textDecoration: 'none' }}>首页</Link>
-          <Link href="/dashboards/community" className="btn" style={{ textDecoration: 'none' }}>社区仪表盘</Link>
+          <Link href="/" className="btn" style={{ textDecoration: 'none' }}>社区仪表盘</Link>
           <button onClick={openShare} className="icon-btn" aria-label="分享">
             <Share2 size={16} aria-hidden="true" />
           </button>
@@ -50,13 +49,6 @@ export default function Navbar() {
           <div className="mobile-nav">
             <Link 
               href="/" 
-              className="mobile-nav-item" 
-              onClick={() => setIsOpen(false)}
-            >
-              首页
-            </Link>
-            <Link 
-              href="/dashboards/community" 
               className="mobile-nav-item" 
               onClick={() => setIsOpen(false)}
             >

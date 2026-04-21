@@ -1,7 +1,7 @@
 {
   "name": "KWDB Community Insight",
   "short_name": "KW Insight",
-  "start_url": "/community-insight/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0ea5e9",

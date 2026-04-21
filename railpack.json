@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "provider": "node",
+  "packages": {
+    "node": "20"
+  },
+  "caches": {
+    "pnpm-store": {
+      "directory": "/root/.local/share/pnpm/store/v3",
+      "type": "shared"
+    },
+    "next": {
+      "directory": ".next/cache",
+      "type": "shared"
+    }
+  },
+  "secrets": [
+    "PUBLIC_SUPABASE_URL",
+    "PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
+  ],
+  "steps": {
+    "install": {
+      "commands": [
+        "corepack enable pnpm",
+        "pnpm install --frozen-lockfile"
+      ],
+      "caches": ["pnpm-store"]
+    },
+    "build": {
+      "commands": [
+        "pnpm run build"
+      ],
+      "secrets": [
+        "PUBLIC_SUPABASE_URL",
+        "PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
+      ],
+      "caches": ["next"],
+      "variables": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "deploy": {
+    "startCommand": "pnpm run start -- -p $PORT",
+    "variables": {
+      "NODE_ENV": "production"
+    }
+  }
+}

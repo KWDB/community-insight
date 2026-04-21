@@ -98,4 +98,4 @@ public/                 # Static assets
 - This is a **static export** build - no server components for data fetching at runtime
 - Authentication is **client-side only** (appropriate for static deployment, not for sensitive data)
 - All chart queries run directly from browser to Supabase (consider rate limits)
-- Base path is `/community-insight` (configured in next.config.js)
+- Base path is `/`

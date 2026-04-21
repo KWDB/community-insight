@@ -27,7 +27,7 @@
 
 | 目录/文件 | 职责说明 |
 | :--- | :--- |
-| **`app/`** | Next.js App Router 的路由和页面入口。包括全局布局 (`layout.tsx`)、全局样式 (`globals.css`) 以及 Dashboard 页面结构 (`dashboards/[id]/page.tsx`)。 |
+| **`app/`** | Next.js App Router 的路由和页面入口。包括全局布局 (`layout.tsx`)、全局样式 (`globals.css`) 以及首页 Dashboard 页面结构 (`page.tsx`)。 |
 | **`charts/`** | **图表元数据中心**。包含多个 `.yaml` 配置文件，每个文件定义了一个图表的基础信息（ID、标题、图表类型 `viz`、绑定的查询模块 `queryModule` 以及布局占比 `colSpan`）。 |
 | **`components/`** | **UI 组件库**。包含鉴权拦截 (`Auth.tsx`)、图表渲染引擎 (`ChartRenderer.tsx`)、仪表盘容器 (`DashboardClient.tsx`) 以及顶部导航、日期选择器等纯 UI 组件。 |
 | **`queries/`** | **数据查询逻辑层**。存放与 Supabase 交互的 TypeScript 脚本，每个文件负责一个图表的数据获取与格式化处理。通过 `index.ts` 统一暴露，避免 Webpack 全量扫描。 |

@@ -13,13 +13,13 @@ export const viewport = {
 export const metadata = {
   title: 'KWDB Community Insight',
   description: 'KWDB 社区指标和趋势展示',
-  metadataBase: new URL('https://kwdb.github.io/community-insight'),
+  metadataBase: new URL('https://community.kbase.cc'),
   icons: {
-    icon: '/community-insight/favicon.svg',
-    shortcut: '/community-insight/favicon.svg',
-    apple: '/community-insight/favicon.svg'
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg'
   },
-  manifest: '/community-insight/manifest.json'
+  manifest: '/manifest.json'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
